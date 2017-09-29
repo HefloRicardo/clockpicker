@@ -361,6 +361,19 @@
 		}
 	}
 
+	function extractAMOrPM(minutes, amOrPM) {
+		if (minutes) {
+			var indexAM = minutes.toUpperCase().indexOf(amOrPM);
+			if (indexAM >= 0) {
+				return {
+					amOrPM: amOrPM,
+					minutes: minutes.substring(0, indexAM)
+				};
+			}
+		}
+		return null;
+	}
+
 	// Default options
 	ClockPicker.DEFAULTS = {
 		'default': '',       // default time, 'now' or '13:14' e.g.
@@ -462,8 +475,18 @@
 				now.getMinutes()
 			];
 		}
+		var minutes = value[1];
+		if (this.amPmBlock) {
+			var extractor = extractAMOrPM(minutes, "AM");
+			if (!extractor)
+				extractor = extractAMOrPM(minutes, "PM");
+			if (extractor) {
+				minutes = extractor.minutes;
+				this.amOrPm = extractor.amOrPM;
+			}
+		}
 		this.hours = + value[0] || 0;
-		this.minutes = + value[1] || 0;
+		this.minutes = + minutes || 0;
 		this.spanHours.html(leadingZero(this.hours));
 		this.spanMinutes.html(leadingZero(this.minutes));
 
